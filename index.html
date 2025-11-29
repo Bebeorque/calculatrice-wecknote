@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculatrice WECKNOTE</title>
+  <style>
+    /* Styles généraux */
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Boîte principale */
+    .box {
+      background: #222;
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    input, select {
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #45A049;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Calculatrice WECKNOTE</h1>
+
+    <label for="wn">WECKNOTES désirés :</label>
+    <input type="number" id="wn" placeholder="Ex: 10000" min="1">
+
+    <label for="rate">Taux (%) :</label>
+    <select id="rate">
+      <!-- Génération automatique des options -->
+      <script>
+        for(let i=15;i<=25;i++){
+          document.write(`<option value="${i}">${i}%</option>`);
+        }
+      </script>
+    </select>
+
+    <button onclick="calculate()">Calculer</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const wn = Number(document.getElementById('wn').value);
+      const rate = Number(document.getElementById('rate').value) / 100;
+      
+      if (!wn || wn <= 0) {
+        document.getElementById('result').innerText = "Veuillez entrer un nombre valide.";
+        return;
+      }
+
+      // Calcul du coût
+      const dollars = wn * (1 + rate);
+      document.getElementById('result').innerText =
+        `Coût estimé : ${dollars.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} $`;
+    }
+  </script>
+</body>
+</html>
