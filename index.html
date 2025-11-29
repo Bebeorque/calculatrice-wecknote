@@ -1,116 +1,157 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculatrice WECKNOTE</title>
-  <style>
-    /* Styles généraux */
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculatrice WECKNOTE</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
 
-    /* Boîte principale */
-    .box {
-      background: #222;
-      padding: 25px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    }
+  .box {
+    background: #222;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 1.8rem;
-    }
+  h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+  }
 
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
+  label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
 
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
+  input, select, button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
 
-    input, select {
-      margin-bottom: 10px;
-    }
+  input, select {
+    margin-bottom: 12px;
+  }
 
-    button {
-      background: #4CAF50;
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-top: 10px;
-    }
+  button {
+    background: #4CAF50;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+  }
 
-    button:hover {
-      background: #45A049;
-    }
+  button:hover {
+    background: #45A049;
+  }
 
-    .result {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
-    }
-  </style>
+  .result {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .mode-toggle {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .mode-toggle button {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+</style>
 </head>
 <body>
-  <div class="box">
-    <h1>Calculatrice WECKNOTE</h1>
+<div class="box">
+  <h1>Calculatrice WECKNOTE</h1>
 
-    <label for="wn">WECKNOTES désirés :</label>
-    <input type="number" id="wn" placeholder="Ex: 10000" min="1">
-
-    <label for="rate">Taux (%) :</label>
-    <select id="rate">
-      <!-- Génération automatique des options -->
-      <script>
-        for(let i=15;i<=25;i++){
-          document.write(`<option value="${i}">${i}%</option>`);
-        }
-      </script>
-    </select>
-
-    <button onclick="calculate()">Calculer</button>
-
-    <div class="result" id="result"></div>
+  <label for="mode">Mode de calcul :</label>
+  <div class="mode-toggle">
+    <button onclick="setMode('weckToDollar')">Wecknote → Dollars</button>
+    <button onclick="setMode('dollarToWeck')">Dollars → Wecknote</button>
   </div>
 
-  <script>
-    function calculate() {
-      const wn = Number(document.getElementById('wn').value);
-      const rate = Number(document.getElementById('rate').value) / 100;
-      
-      if (!wn || wn <= 0) {
-        document.getElementById('result').innerText = "Veuillez entrer un nombre valide.";
-        return;
-      }
+  <label id="inputLabel" for="amount">WECKNOTES désirés :</label>
+  <input type="number" id="amount" placeholder="Ex: 1000" min="1">
 
-      // Calcul du coût
-      const dollars = wn * (1 + rate);
-      document.getElementById('result').innerText =
-        `Coût estimé : ${dollars.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} $`;
+  <label for="rate">Taux (%) :</label>
+  <select id="rate">
+    <script>
+      for(let i=15;i<=25;i++){
+        document.write(`<option value="${i}">${i}%</option>`);
+      }
+    </script>
+  </select>
+
+  <button onclick="calculate()">Calculer</button>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  let mode = 'weckToDollar'; // mode par défaut
+
+  function setMode(newMode){
+    mode = newMode;
+    const inputLabel = document.getElementById('inputLabel');
+    if(mode === 'weckToDollar'){
+      inputLabel.innerText = 'WECKNOTES désirés :';
+      document.getElementById('amount').placeholder = 'Ex: 1000';
+    } else {
+      inputLabel.innerText = 'Dollars :';
+      document.getElementById('amount').placeholder = 'Ex: 1000';
     }
-  </script>
+    document.getElementById('result').innerText = '';
+  }
+
+  function calculate(){
+    const amount = Number(document.getElementById('amount').value);
+    const ratePercent = Number(document.getElementById('rate').value);
+
+    if(!amount || amount <= 0){
+      document.getElementById('result').innerText = 'Veuillez entrer un nombre valide.';
+      return;
+    }
+
+    const rate = ratePercent / 100;
+    let result;
+
+    if(mode === 'weckToDollar'){
+      // Formule : Dollars = Wecknote ÷ (1 - taux)
+      result = amount / (1 - rate);
+      document.getElementById('result').innerText =
+        `Coût estimé : ${Math.round(result).toLocaleString('fr-FR')} $`;
+    } else {
+      // Formule : Wecknote = Dollars × (1 - taux)
+      result = amount * (1 - rate);
+      document.getElementById('result').innerText =
+        `Wecknotes obtenus : ${Math.round(result).toLocaleString('fr-FR')}`;
+    }
+  }
+</script>
 </body>
 </html>
